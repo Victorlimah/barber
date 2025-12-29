@@ -68,25 +68,47 @@ export default function ClientsLastVisit() {
 
   return (
     <Shell>
-      <div className="space-y-6">
+      <div className="space-y-6 lg:space-y-8">
         {/* Header with Back Button */}
-        <div className="flex items-center gap-3">
-          <button
-            onClick={() => navigate(-1)}
-            className="p-2 rounded-lg bg-zinc-800 text-zinc-400 hover:text-white hover:bg-zinc-700 transition-colors"
-          >
-            <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-            </svg>
-          </button>
-          <div>
-            <h2 className="text-xl font-bold text-white">Último Corte</h2>
-            <p className="text-zinc-500 text-sm">{clients.length} clientes cadastrados</p>
+        <div className="flex items-center justify-between gap-4">
+          <div className="flex items-center gap-3">
+            <button
+              onClick={() => navigate(-1)}
+              className="p-2 rounded-lg bg-zinc-800 text-zinc-400 hover:text-white hover:bg-zinc-700 transition-colors"
+            >
+              <svg className="w-5 h-5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+              </svg>
+            </button>
+            <div>
+              <h2 className="text-xl lg:text-2xl font-bold text-white">Último Corte</h2>
+              <p className="text-zinc-500 text-sm lg:text-base">{clients.length} clientes</p>
+            </div>
+          </div>
+
+          {/* Legend - Desktop inline */}
+          <div className="hidden lg:flex items-center gap-4 text-xs">
+            <div className="flex items-center gap-1.5">
+              <span className="w-2 h-2 rounded-full bg-green-400"></span>
+              <span className="text-zinc-400">&lt; 15d</span>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <span className="w-2 h-2 rounded-full bg-yellow-400"></span>
+              <span className="text-zinc-400">15-29d</span>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <span className="w-2 h-2 rounded-full bg-orange-400"></span>
+              <span className="text-zinc-400">30+d</span>
+            </div>
+            <div className="flex items-center gap-1.5">
+              <span className="w-2 h-2 rounded-full bg-red-400"></span>
+              <span className="text-zinc-400">Nunca</span>
+            </div>
           </div>
         </div>
 
         {/* Search */}
-        <div className="relative">
+        <div className="relative lg:max-w-md">
           <svg
             className="absolute left-3 top-1/2 -translate-y-1/2 w-5 h-5 text-zinc-500"
             fill="none"
@@ -104,8 +126,8 @@ export default function ClientsLastVisit() {
           />
         </div>
 
-        {/* Clients List */}
-        <div className="space-y-2">
+        {/* Mobile: Cards */}
+        <div className="space-y-2 lg:hidden">
           {filteredClients.length === 0 ? (
             <div className="card text-center text-zinc-500 py-8">
               {searchTerm ? (
@@ -151,8 +173,55 @@ export default function ClientsLastVisit() {
           )}
         </div>
 
-        {/* Legend */}
-        <div className="card bg-zinc-800/50 border-zinc-700">
+        {/* Desktop: Table */}
+        <div className="hidden lg:block">
+          {filteredClients.length === 0 ? (
+            <div className="card text-center text-zinc-500 py-8">
+              {searchTerm ? 'Nenhum cliente encontrado' : 'Nenhum cliente cadastrado'}
+            </div>
+          ) : (
+            <div className="card p-0 overflow-hidden">
+              <table className="w-full">
+                <thead className="bg-zinc-800/50">
+                  <tr className="text-left text-sm text-zinc-400">
+                    <th className="px-4 py-3 font-medium">Nome</th>
+                    <th className="px-4 py-3 font-medium">Telefone</th>
+                    <th className="px-4 py-3 font-medium">Última Visita</th>
+                    <th className="px-4 py-3 font-medium text-center">Status</th>
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-zinc-800">
+                  {filteredClients.map((client) => (
+                    <tr
+                      key={client.id}
+                      className="hover:bg-zinc-800/30 transition-colors"
+                    >
+                      <td className="px-4 py-3">
+                        <p className="font-medium text-white">{client.name}</p>
+                      </td>
+                      <td className="px-4 py-3 text-zinc-400">
+                        {client.phone || '—'}
+                      </td>
+                      <td className="px-4 py-3 text-zinc-400">
+                        {client.lastVisitLabel}
+                      </td>
+                      <td className="px-4 py-3 text-center">
+                        <span
+                          className={`inline-block text-xs font-medium px-2.5 py-1 rounded-full ${getDaysBadgeColor(client.daysSince)}`}
+                        >
+                          {client.daysLabel}
+                        </span>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
+          )}
+        </div>
+
+        {/* Legend - Mobile only */}
+        <div className="card bg-zinc-800/50 border-zinc-700 lg:hidden">
           <h4 className="text-xs font-medium text-zinc-400 mb-2">Legenda</h4>
           <div className="flex flex-wrap gap-3 text-xs">
             <div className="flex items-center gap-1.5">
@@ -177,5 +246,3 @@ export default function ClientsLastVisit() {
     </Shell>
   )
 }
-
-

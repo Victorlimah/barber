@@ -29,67 +29,116 @@ export default function Login() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-zinc-900 px-4">
-      <div className="w-full max-w-sm">
-        {/* Logo / Brand */}
-        <div className="text-center mb-8">
-          <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-amber-500/10 mb-4">
-            <svg className="w-8 h-8 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.121 14.121L19 19m-7-7l7-7m-7 7l-2.879 2.879M12 12L9.121 9.121m0 5.758a3 3 0 10-4.243 4.243 3 3 0 004.243-4.243zm0-5.758a3 3 0 10-4.243-4.243 3 3 0 004.243 4.243z" />
-            </svg>
+      {/* Desktop: Two-column layout */}
+      <div className="w-full max-w-sm lg:max-w-4xl lg:grid lg:grid-cols-2 lg:gap-16 lg:items-center">
+        {/* Left: Branding (desktop only) */}
+        <div className="hidden lg:block">
+          <div className="space-y-6">
+            <div className="inline-flex items-center justify-center w-20 h-20 rounded-2xl bg-amber-500/10">
+              <svg className="w-10 h-10 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.121 14.121L19 19m-7-7l7-7m-7 7l-2.879 2.879M12 12L9.121 9.121m0 5.758a3 3 0 10-4.243 4.243 3 3 0 004.243-4.243zm0-5.758a3 3 0 10-4.243-4.243 3 3 0 004.243 4.243z" />
+              </svg>
+            </div>
+            <div>
+              <h1 className="text-4xl font-bold text-white">Filho Barbeiro</h1>
+              <p className="text-zinc-400 mt-2 text-lg">Sistema de Gestão</p>
+            </div>
+            <div className="space-y-4 pt-4">
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-lg bg-amber-500/10 flex items-center justify-center">
+                  <svg className="w-4 h-4 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                  </svg>
+                </div>
+                <span className="text-zinc-400">Gerencie atendimentos</span>
+              </div>
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-lg bg-amber-500/10 flex items-center justify-center">
+                  <svg className="w-4 h-4 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                  </svg>
+                </div>
+                <span className="text-zinc-400">Controle de clientes</span>
+              </div>
+              <div className="flex items-center gap-3">
+                <div className="w-8 h-8 rounded-lg bg-amber-500/10 flex items-center justify-center">
+                  <svg className="w-4 h-4 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M5 13l4 4L19 7" />
+                  </svg>
+                </div>
+                <span className="text-zinc-400">Dashboard de métricas</span>
+              </div>
+            </div>
           </div>
-          <h1 className="text-2xl font-bold text-white">Barbearia Ousadia</h1>
-          <p className="text-zinc-500 mt-1">Sistema de Gestão</p>
         </div>
 
-        {/* Login Form */}
-        <form onSubmit={handleSubmit} className="card space-y-4">
-          <div>
-            <label htmlFor="email" className="label">Email</label>
-            <input
-              id="email"
-              type="email"
-              className="input"
-              value={email}
-              onChange={(e) => setEmail(e.target.value)}
-              placeholder="seu@email.com"
-              required
-              autoComplete="email"
-            />
-          </div>
-
-          <div>
-            <label htmlFor="password" className="label">Senha</label>
-            <input
-              id="password"
-              type="password"
-              className="input"
-              value={password}
-              onChange={(e) => setPassword(e.target.value)}
-              placeholder="••••••••"
-              required
-              autoComplete="current-password"
-            />
-          </div>
-
-          {error && (
-            <div className="p-3 rounded-lg bg-red-500/10 border border-red-500/20 text-red-400 text-sm">
-              {error}
+        {/* Right: Login Form */}
+        <div className="w-full max-w-sm mx-auto lg:max-w-none">
+          {/* Mobile Logo */}
+          <div className="text-center mb-8 lg:hidden">
+            <div className="inline-flex items-center justify-center w-16 h-16 rounded-2xl bg-amber-500/10 mb-4">
+              <svg className="w-8 h-8 text-amber-500" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M14.121 14.121L19 19m-7-7l7-7m-7 7l-2.879 2.879M12 12L9.121 9.121m0 5.758a3 3 0 10-4.243 4.243 3 3 0 004.243-4.243zm0-5.758a3 3 0 10-4.243-4.243 3 3 0 004.243 4.243z" />
+              </svg>
             </div>
-          )}
+            <h1 className="text-2xl font-bold text-white">Filho Barbeiro</h1>
+            <p className="text-zinc-500 mt-1">Sistema de Gestão</p>
+          </div>
 
-          <button
-            type="submit"
-            disabled={loading}
-            className="btn btn-primary w-full"
-          >
-            {loading ? 'Entrando...' : 'Entrar'}
-          </button>
-        </form>
+          {/* Login Card */}
+          <div className="card lg:p-8">
+            <h2 className="hidden lg:block text-xl font-bold text-white mb-6">Entrar</h2>
+            
+            <form onSubmit={handleSubmit} className="space-y-4">
+              <div>
+                <label htmlFor="email" className="label">Email</label>
+                <input
+                  id="email"
+                  type="email"
+                  className="input"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  placeholder="seu@email.com"
+                  required
+                  autoComplete="email"
+                />
+              </div>
 
-        {/* Hint */}
-        <p className="text-center text-zinc-600 text-xs mt-4">
-          Use admin@admin.com / admin
-        </p>
+              <div>
+                <label htmlFor="password" className="label">Senha</label>
+                <input
+                  id="password"
+                  type="password"
+                  className="input"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  placeholder="••••••••"
+                  required
+                  autoComplete="current-password"
+                />
+              </div>
+
+              {error && (
+                <div className="p-3 rounded-lg bg-red-500/10 border border-red-500/20 text-red-400 text-sm">
+                  {error}
+                </div>
+              )}
+
+              <button
+                type="submit"
+                disabled={loading}
+                className="btn btn-primary w-full py-3"
+              >
+                {loading ? 'Entrando...' : 'Entrar'}
+              </button>
+            </form>
+
+            {/* Hint */}
+            <p className="text-center text-zinc-600 text-xs mt-4">
+              Use admin@admin.com / admin
+            </p>
+          </div>
+        </div>
       </div>
     </div>
   )

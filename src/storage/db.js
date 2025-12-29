@@ -16,7 +16,7 @@ const createInitialDB = () => {
   const defaultBarberId = crypto.randomUUID()
   return {
     version: 3, // Bumped version for scheduling requests
-    barbershopName: 'Barbearia Ousadia',
+    barbershopName: 'Filho Barbeiro',
     services: [
       { id: crypto.randomUUID(), name: 'Corte', price: 30 },
       { id: crypto.randomUUID(), name: 'Barba', price: 25 },

@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react'
 import { useLocation } from 'react-router-dom'
 import { loadDB, saveDB } from '../storage/db'
-import { moneyBRL, toDateInputValue } from '../storage/helpers'
+import { moneyBRL, toDateInputValue, formatDateBR } from '../storage/helpers'
 import Shell from '../layout/Shell'
 
 export default function NewAppointment() {
@@ -202,14 +202,21 @@ export default function NewAppointment() {
   }
 
   const selectedService = services.find((s) => s.id === selectedServiceId)
+  const selectedBarber = barbers.find((b) => b.id === selectedBarberId)
+  const selectedClient = clients.find((c) => c.id === selectedClientId)
+
+  // Summary data for desktop
+  const summaryClient = clientMode === 'existing' 
+    ? selectedClient?.name 
+    : newClientName.trim() || null
 
   return (
     <Shell>
-      <div className="space-y-6">
+      <div className="space-y-6 lg:space-y-8">
         {/* Header */}
         <div>
-          <h2 className="text-xl font-bold text-white">Novo Atendimento</h2>
-          <p className="text-zinc-500 text-sm">Registre um atendimento</p>
+          <h2 className="text-xl lg:text-2xl font-bold text-white">Novo Atendimento</h2>
+          <p className="text-zinc-500 text-sm lg:text-base">Registre um atendimento</p>
         </div>
 
         {/* Info Message (from prefill) */}
@@ -223,157 +230,201 @@ export default function NewAppointment() {
         )}
 
         {/* Form */}
-        <form onSubmit={handleSubmit} className="space-y-4">
-          {/* Barber Selection */}
-          <div className="card space-y-4">
-            <h3 className="font-semibold text-zinc-300">Barbeiro</h3>
-            
-            {barbers.length === 0 ? (
-              <p className="text-zinc-500 text-sm text-center py-4">
-                Nenhum barbeiro cadastrado. Adicione em Equipe.
-              </p>
-            ) : (
-              <select
-                className="input"
-                value={selectedBarberId}
-                onChange={(e) => setSelectedBarberId(e.target.value)}
-              >
-                {barbers.map((barber) => (
-                  <option key={barber.id} value={barber.id}>
-                    {barber.name} {barber.isDefault && '(Padrão)'}
-                  </option>
-                ))}
-              </select>
-            )}
-          </div>
-
-          {/* Client Selection Mode */}
-          <div className="card space-y-4">
-            <h3 className="font-semibold text-zinc-300">Cliente</h3>
-            
-            {/* Mode Toggle */}
-            <div className="flex gap-2">
-              <button
-                type="button"
-                onClick={() => setClientMode('existing')}
-                className={`flex-1 py-2 px-3 rounded-lg text-sm font-medium transition-colors ${
-                  clientMode === 'existing'
-                    ? 'bg-amber-500 text-zinc-900'
-                    : 'bg-zinc-800 text-zinc-400 hover:text-white'
-                }`}
-              >
-                Existente
-              </button>
-              <button
-                type="button"
-                onClick={() => setClientMode('new')}
-                className={`flex-1 py-2 px-3 rounded-lg text-sm font-medium transition-colors ${
-                  clientMode === 'new'
-                    ? 'bg-amber-500 text-zinc-900'
-                    : 'bg-zinc-800 text-zinc-400 hover:text-white'
-                }`}
-              >
-                Novo Cliente
-              </button>
-            </div>
-
-            {clientMode === 'existing' ? (
-              <div>
-                {clients.length === 0 ? (
+        <form onSubmit={handleSubmit}>
+          {/* Desktop: Two-column layout */}
+          <div className="lg:grid lg:grid-cols-2 lg:gap-8">
+            {/* Left Column: Client + Barber */}
+            <div className="space-y-4">
+              {/* Barber Selection */}
+              <div className="card space-y-4">
+                <h3 className="font-semibold text-zinc-300 lg:text-lg">Barbeiro</h3>
+                
+                {barbers.length === 0 ? (
                   <p className="text-zinc-500 text-sm text-center py-4">
-                    Nenhum cliente cadastrado. Selecione "Novo Cliente".
+                    Nenhum barbeiro cadastrado. Adicione em Equipe.
                   </p>
                 ) : (
                   <select
                     className="input"
-                    value={selectedClientId}
-                    onChange={(e) => setSelectedClientId(e.target.value)}
+                    value={selectedBarberId}
+                    onChange={(e) => setSelectedBarberId(e.target.value)}
                   >
-                    <option value="">Selecione um cliente</option>
-                    {clients.map((client) => (
-                      <option key={client.id} value={client.id}>
-                        {client.name} {client.phone && `(${client.phone})`}
+                    {barbers.map((barber) => (
+                      <option key={barber.id} value={barber.id}>
+                        {barber.name} {barber.isDefault && '(Padrão)'}
                       </option>
                     ))}
                   </select>
                 )}
               </div>
-            ) : (
-              <div className="space-y-3">
+
+              {/* Client Selection Mode */}
+              <div className="card space-y-4">
+                <h3 className="font-semibold text-zinc-300 lg:text-lg">Cliente</h3>
+                
+                {/* Mode Toggle */}
+                <div className="flex gap-2">
+                  <button
+                    type="button"
+                    onClick={() => setClientMode('existing')}
+                    className={`flex-1 py-2 px-3 rounded-lg text-sm font-medium transition-colors ${
+                      clientMode === 'existing'
+                        ? 'bg-amber-500 text-zinc-900'
+                        : 'bg-zinc-800 text-zinc-400 hover:text-white'
+                    }`}
+                  >
+                    Existente
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setClientMode('new')}
+                    className={`flex-1 py-2 px-3 rounded-lg text-sm font-medium transition-colors ${
+                      clientMode === 'new'
+                        ? 'bg-amber-500 text-zinc-900'
+                        : 'bg-zinc-800 text-zinc-400 hover:text-white'
+                    }`}
+                  >
+                    Novo Cliente
+                  </button>
+                </div>
+
+                {clientMode === 'existing' ? (
+                  <div>
+                    {clients.length === 0 ? (
+                      <p className="text-zinc-500 text-sm text-center py-4">
+                        Nenhum cliente cadastrado. Selecione "Novo Cliente".
+                      </p>
+                    ) : (
+                      <select
+                        className="input"
+                        value={selectedClientId}
+                        onChange={(e) => setSelectedClientId(e.target.value)}
+                      >
+                        <option value="">Selecione um cliente</option>
+                        {clients.map((client) => (
+                          <option key={client.id} value={client.id}>
+                            {client.name} {client.phone && `(${client.phone})`}
+                          </option>
+                        ))}
+                      </select>
+                    )}
+                  </div>
+                ) : (
+                  <div className="space-y-3">
+                    <div>
+                      <label className="label">Nome</label>
+                      <input
+                        type="text"
+                        className="input"
+                        placeholder="Nome do cliente"
+                        value={newClientName}
+                        onChange={(e) => setNewClientName(e.target.value)}
+                      />
+                    </div>
+                    <div>
+                      <label className="label">Telefone</label>
+                      <input
+                        type="tel"
+                        className="input"
+                        placeholder="(opcional)"
+                        value={newClientPhone}
+                        onChange={(e) => setNewClientPhone(e.target.value)}
+                      />
+                    </div>
+                  </div>
+                )}
+              </div>
+            </div>
+
+            {/* Right Column: Service + Date + Summary */}
+            <div className="space-y-4 mt-4 lg:mt-0">
+              {/* Service Selection */}
+              <div className="card space-y-4">
+                <h3 className="font-semibold text-zinc-300 lg:text-lg">Serviço</h3>
+                
+                {services.length === 0 ? (
+                  <p className="text-zinc-500 text-sm text-center py-4">
+                    Nenhum serviço cadastrado. Adicione em Serviços.
+                  </p>
+                ) : (
+                  <>
+                    <select
+                      className="input"
+                      value={selectedServiceId}
+                      onChange={(e) => handleServiceChange(e.target.value)}
+                    >
+                      {services.map((service) => (
+                        <option key={service.id} value={service.id}>
+                          {service.name} - {moneyBRL(service.price)}
+                        </option>
+                      ))}
+                    </select>
+
+                    {/* Price Override */}
+                    <div>
+                      <label className="label">
+                        Valor {selectedService && `(sugerido: ${moneyBRL(selectedService.price)})`}
+                      </label>
+                      <input
+                        type="number"
+                        className="input"
+                        value={price}
+                        onChange={(e) => setPrice(e.target.value)}
+                        min="0"
+                        step="0.01"
+                        placeholder="Valor"
+                      />
+                    </div>
+                  </>
+                )}
+              </div>
+
+              {/* Date Selection */}
+              <div className="card space-y-4">
+                <h3 className="font-semibold text-zinc-300 lg:text-lg">Data</h3>
                 <input
-                  type="text"
+                  type="date"
                   className="input"
-                  placeholder="Nome do cliente"
-                  value={newClientName}
-                  onChange={(e) => setNewClientName(e.target.value)}
-                />
-                <input
-                  type="tel"
-                  className="input"
-                  placeholder="Telefone (opcional)"
-                  value={newClientPhone}
-                  onChange={(e) => setNewClientPhone(e.target.value)}
+                  value={date}
+                  onChange={(e) => setDate(e.target.value)}
                 />
               </div>
-            )}
-          </div>
 
-          {/* Service Selection */}
-          <div className="card space-y-4">
-            <h3 className="font-semibold text-zinc-300">Serviço</h3>
-            
-            {services.length === 0 ? (
-              <p className="text-zinc-500 text-sm text-center py-4">
-                Nenhum serviço cadastrado. Adicione em Serviços.
-              </p>
-            ) : (
-              <>
-                <select
-                  className="input"
-                  value={selectedServiceId}
-                  onChange={(e) => handleServiceChange(e.target.value)}
-                >
-                  {services.map((service) => (
-                    <option key={service.id} value={service.id}>
-                      {service.name} - {moneyBRL(service.price)}
-                    </option>
-                  ))}
-                </select>
-
-                {/* Price Override */}
-                <div>
-                  <label className="label">
-                    Valor {selectedService && `(sugerido: ${moneyBRL(selectedService.price)})`}
-                  </label>
-                  <input
-                    type="number"
-                    className="input"
-                    value={price}
-                    onChange={(e) => setPrice(e.target.value)}
-                    min="0"
-                    step="0.01"
-                    placeholder="Valor"
-                  />
+              {/* Desktop Summary Panel */}
+              <div className="hidden lg:block card bg-zinc-800/50 border-zinc-700">
+                <h3 className="font-semibold text-zinc-300 mb-4">Resumo</h3>
+                <div className="space-y-3">
+                  <div className="flex justify-between">
+                    <span className="text-zinc-500">Cliente</span>
+                    <span className="text-white font-medium">{summaryClient || '—'}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-zinc-500">Barbeiro</span>
+                    <span className="text-white font-medium">{selectedBarber?.name || '—'}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-zinc-500">Serviço</span>
+                    <span className="text-white font-medium">{selectedService?.name || '—'}</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span className="text-zinc-500">Data</span>
+                    <span className="text-white font-medium">{date ? formatDateBR(date + 'T12:00:00') : '—'}</span>
+                  </div>
+                  <div className="pt-3 border-t border-zinc-700 flex justify-between">
+                    <span className="text-zinc-400 font-medium">Total</span>
+                    <span className="text-amber-500 text-xl font-bold">
+                      {price ? moneyBRL(parseFloat(price)) : '—'}
+                    </span>
+                  </div>
                 </div>
-              </>
-            )}
-          </div>
-
-          {/* Date Selection */}
-          <div className="card space-y-4">
-            <h3 className="font-semibold text-zinc-300">Data</h3>
-            <input
-              type="date"
-              className="input"
-              value={date}
-              onChange={(e) => setDate(e.target.value)}
-            />
+              </div>
+            </div>
           </div>
 
           {/* Message */}
           {message.text && message.type !== 'info' && (
             <div
-              className={`p-3 rounded-lg text-sm text-center ${
+              className={`mt-4 p-3 rounded-lg text-sm text-center ${
                 message.type === 'success'
                   ? 'bg-green-500/10 border border-green-500/20 text-green-400'
                   : 'bg-red-500/10 border border-red-500/20 text-red-400'
@@ -384,7 +435,7 @@ export default function NewAppointment() {
           )}
 
           {/* Submit */}
-          <button type="submit" className="btn btn-primary w-full text-lg py-4">
+          <button type="submit" className="mt-6 btn btn-primary w-full text-lg py-4 lg:py-3">
             Registrar Atendimento
           </button>
         </form>
